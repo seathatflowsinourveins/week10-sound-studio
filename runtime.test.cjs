@@ -21,6 +21,9 @@ test('readiness waits for the first draw after asynchronous setup',()=>{
  const h=observerHarness();h.win.frameCount=0;h.tick();assert(!h.messages.some(m=>m.data.kind==='ready'));
  h.win.frameCount=1;h.tick();assert(h.messages.some(m=>m.data.kind==='ready'));
 });
+test('a ready preview reports content height only when it changes',()=>{
+ const h=observerHarness();h.doc.body.scrollHeight=295;h.tick();h.tick();assert.equal(h.messages.filter(m=>m.data.kind==='layout').length,1);assert.equal(h.messages.find(m=>m.data.kind==='layout').data.height,295);h.doc.body.scrollHeight=370;h.tick();assert.equal(h.messages.filter(m=>m.data.kind==='layout').at(-1).data.height,370);
+});
 test('readiness reports logical sketch dimensions rather than high-density backing pixels',()=>{
  const h=observerHarness();h.win.width=240;h.win.height=110;h.tick();const ready=h.messages.find(m=>m.data.kind==='ready').data;assert.equal(ready.width,240);assert.equal(ready.height,110);
 });
@@ -34,6 +37,9 @@ test('stopping a frame preserves native Tab navigation out of it',()=>{
 });
 test('an intentionally stopped loading frame never reports a loading timeout',()=>{
  const h=observerHarness();h.win.frameCount=0;h.win.soundPreview.stop();for(let i=0;i<170;i++)h.tick();assert(!h.messages.some(m=>m.data.kind==='error'||m.data.kind==='ready'));
+});
+test('late rejection after intentional Stop does not replace its stopped status with a sketch error',()=>{
+ const h=observerHarness();h.win.soundPreview.stop();h.events.unhandledrejection({reason:Error('context closed by Stop')});assert(!h.messages.some(m=>m.data.kind==='error'));
 });
 test('Stop all cancels a late microphone grant and active streams on page hiding',async()=>{
  const h=observerHarness(),track={stops:0,stop(){this.stops++;}},pending=h.media.getUserMedia({audio:true});

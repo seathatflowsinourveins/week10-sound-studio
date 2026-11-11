@@ -7,7 +7,7 @@
   const lessons = {
     unlock: {
       goal: 'Start and stop one quiet tone deliberately.',
-      before: 'Read setup as preparation and a button handler as a later action; async lets that handler use await to wait for audio to become available.',
+      before: 'Read setup as preparation and a button handler as a later action; await waits for audio. A numbered request ticket lets Stop cancel an older Play that is still waiting.',
       success: 'Run, press Play, then Stop; identify the line that starts the oscillator and the number that sets its frequency.',
       focus: [
         'createCanvas(480, 220);',
@@ -24,18 +24,18 @@
     },
     single: {
       goal: 'Load one recording and control play or pause.',
-      before: 'Try the first tone lesson, then keep sound-0.wav beside sketch.js and read await as waiting for the file to finish loading.',
+      before: 'Try the first tone lesson, then keep sound-0.wav beside sketch.js. The canvas and Play / pause button share one function; Enter or Space activates the focused button.',
       success: 'Press the canvas to play, press again to pause, and point to the filename you would replace with your own recording.',
       focus: [
         "sound = await loadSound('sound-0.wav');",
-        'if (sound.isPlaying()) {',
+        'if (!wantsPlayback) {',
         "sound = await loadSound('sound-0.wav');"
       ],
       check: {
         question: 'In this studio’s pinned p5.sound version, what does sound.loop() do here?',
         options: ['It configures repetition; sound.play() begins playback later.', 'It repeats the JavaScript setup function.', 'It asks for microphone permission.'],
         answer: 0,
-        why: 'Here loop() sets the file to repeat. The canvas press calls play() or pause(); older tutorials may use different playback behavior.'
+        why: 'Here loop() sets the file to repeat. A canvas press or button click chooses play or pause; the latest choice wins even while browser audio is becoming ready. Older tutorials may use different playback behavior.'
       },
       sources: ['class-load', 'tutorial-load']
     },
@@ -92,7 +92,7 @@
     },
     mic: {
       goal: 'Turn a level measurement into a deliberate visual response.',
-      before: 'Read a condition as a true-or-false decision; starting browser audio and granting microphone permission are separate steps.',
+      before: 'Starting browser audio and granting microphone permission are separate steps. Only one permission attempt can be pending; if access is unavailable or denied, press Run to retry in a fresh preview.',
       success: 'Cross the threshold with the practice slider, then request microphone access and check its status label before treating a value as live input.',
       focus: [
         'if (over && !above) shade = [random(90), random(90), random(90)];',
@@ -120,7 +120,7 @@
         question: 'What do the spectrum bars represent in this sketch?',
         options: ['Normalized amplitudes in frequency regions, enlarged for display.', 'One named musical note per bar.', 'The oscillator’s volume-control settings.'],
         answer: 0,
-        why: 'analyze() returns frequency-bin amplitudes for this pinned version. waveform() returns samples over time; display magnification changes the drawing, not the audio gain.'
+        why: 'analyze() returns frequency-bin amplitudes for this pinned version. waveform() returns samples over the labeled time window: sample count divided by sample rate. Display magnification changes the drawing, not the audio gain.'
       },
       sources: ['class-fft', 'fft-reference']
     },
@@ -131,7 +131,7 @@
       focus: [
         'osc.freq(base * (1 + Number(position.value()) / width));',
         'if (!revealed && marks.length < ratios.length) marks.push(Number(position.value()));',
-        "createButton('Save practice image').mousePressed(() => saveCanvas('ear-practice', 'png'));"
+        "createButton('Save practice image').mouseClicked(() => saveCanvas('ear-practice', 'png'));"
       ],
       check: {
         question: 'Which result belongs in the worksheet’s ear-training submission?',
@@ -168,8 +168,11 @@
     { term: ';', meaning: 'A semicolon marks the end of a statement in these examples.', example: 'let chosen = 0;' },
     { term: '.', meaning: 'A dot accesses something belonging to an object, such as a method or property.', example: 'sound.play();' },
     { term: 'new', meaning: 'Create an object from a constructor, ready to use through its methods.', example: "let osc = new p5.Oscillator(220, 'sine');" },
-    { term: '=>', meaning: 'An arrow defines a function; an event control can call that function later.', example: "createButton('Play').mousePressed(() => playNote(0));" },
+    { term: '=>', meaning: 'An arrow defines a function; an event control can call that function later.', example: "createButton('Play').mouseClicked(() => playNote(0));" },
     { term: '!', meaning: 'Logical not reverses a true-or-false result.', example: 'if (!playing) osc.start();' },
+    { term: '++', meaning: 'Add one to a number. ++requestVersion updates it before giving the new value to a ticket; requestVersion++ alone also advances the counter.', example: 'let requestVersion = 0;\nconst ticket = ++requestVersion;\nrequestVersion++;' },
+    { term: '!==', meaning: 'Strict not-equal checks whether two values differ without converting their types. An old ticket differs from the latest request number.', example: 'if (ticket !== requestVersion) { canceled = true; }' },
+    { term: 'try / catch', meaning: 'Try runs code that may fail; catch receives a thrown error or a rejected awaited promise. Restore a truthful state, then throw error again so the preview can report it.', example: 'async function activate() {\n  try { await getAudioContext().resume(); }\n  catch (error) { wantsPlayback = false; throw error; }\n}' },
     { term: '&&', meaning: 'For conditions, both sides must be true; JavaScript checks the right side only if the left is truthy.', example: 'if (over && !above) changeColor();' },
     { term: 'true / false', meaning: 'Boolean values represent yes-or-no state without quotation marks.', example: 'let playing = false;\nplaying = true;' },
     { term: 'if', meaning: 'Run the following statement or block only when the condition is truthy.', example: 'if (playing) { osc.stop(); }' },

@@ -20,11 +20,11 @@ for(const lesson of D.lessons){
  for(const [name,data]of [['sketch.js',code],['index.html',html],['GUIDE.md',guide],['files.zip',zip(bundle)],...sounds])entries.set('lessons/'+lesson.id+'/'+name,Buffer.isBuffer(data)?data:Buffer.from(data));
 }
 const release=hash(Buffer.concat([...entries].sort(([a],[b])=>a.localeCompare(b)).flatMap(([name,data])=>[Buffer.from(name+'\0'),data]))).slice(0,16);
-let html=entries.get('index.html').toString().replace('checked 10 Nov 2026','checked 10 Nov 2026 · build '+release);
+let html=entries.get('index.html').toString().replace('checked 11 Nov 2026','checked 11 Nov 2026 · build '+release);
 for(const name of ['studio.css','core.js','course-data.js','lesson-guide.js','illustrations.js','runtime.js','studio.js'])html=html.replace('./'+name+'"','./'+name+'?v='+release+'"');
 entries.set('index.html',Buffer.from(html));
 const hashes=[...entries].map(([name,data])=>({path:name,bytes:data.length,sha256:hash(data)})).sort((a,b)=>a.path.localeCompare(b.path));
-entries.set('release.json',Buffer.from(JSON.stringify({release,checked:'2026-11-10',p5:'2.3.4',p5sound:'0.4.1',lessons:D.lessons.length,lines:D.lessons.reduce((n,l)=>n+l.lines.length,0),resources:D.resources.length,files:hashes},null,2)+'\n'));
+entries.set('release.json',Buffer.from(JSON.stringify({release,checked:'2026-11-11',p5:'2.3.4',p5sound:'0.4.1',lessons:D.lessons.length,lines:D.lessons.reduce((n,l)=>n+l.lines.length,0),resources:D.resources.length,files:hashes},null,2)+'\n'));
 fs.mkdirSync(destination,{recursive:true});
 function existing(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?existing(path.join(dir,e.name)):[path.relative(destination,path.join(dir,e.name)).split(path.sep).join('/')]);}
 const expected=new Set(entries.keys()),stale=existing(destination).filter(name=>!expected.has(name));

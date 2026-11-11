@@ -79,7 +79,7 @@ test('self-checks have three distinct choices and one usable answer with feedbac
 
 test('syntax help covers the requested reading tools with valid JavaScript examples', () => {
   const { syntax } = guide();
-  assert.deepEqual(syntax.map(entry => entry.term).sort(), ['=', '()', '{}', '[]', ';', '.', 'new', '=>', '!', '&&', 'true / false', 'if', 'for', 'scope'].sort());
+  assert.deepEqual(syntax.map(entry => entry.term).sort(), ['=', '()', '{}', '[]', ';', '.', 'new', '=>', '!', '&&', 'true / false', 'if', 'for', 'scope', '++', '!==', 'try / catch'].sort());
   for (const entry of syntax) {
     assert.ok(typeof entry.meaning === 'string' && entry.meaning.trim(), `${entry.term}: explanation`);
     assert.ok(typeof entry.example === 'string' && entry.example.trim(), `${entry.term}: example`);

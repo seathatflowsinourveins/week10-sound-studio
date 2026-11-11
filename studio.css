@@ -14,3 +14,7 @@ h1{font-size:clamp(27px,2.8vw,39px);font-weight:650;letter-spacing:-.04em;line-h
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 @media print{.topbar,.sidebar,.workspace-nav,.code-panel,.live-panel,.line-controls,.practice-nav,footer,.next-card,.diagram-controls,.quick-options{display:none!important}.shell,.learn-grid,.lesson-bottom,.check-and-sources{display:block}.panel{break-inside:avoid}body{color-scheme:light;--bg:#fff;--panel:#fff;--panel-alt:#f5f5f5;--text:#111;--muted:#333;--accent:#183d23;--blue:#164456;--amber:#664319;background:var(--bg);color:var(--text)}.panel{margin-bottom:16px}}
 #line-number{font:11px/18px var(--sans);margin:0 0 6px;color:var(--blue)}#selected-code{font:13px/25px var(--mono);padding:12px;margin-top:0}#practice-code{font-size:13px}#concept-svg text{font-size:16px}
+.storage-recovery{max-width:min(1548px,calc(100% - 28px));margin:16px auto;border-left:3px solid var(--amber)}
+.workspace-nav>span{display:block;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:11px/1.6 var(--sans);letter-spacing:0;color:var(--accent)}
+.footer-links{display:flex;gap:14px;flex-wrap:wrap}
+@media(max-width:680px){html{scroll-padding-top:calc(var(--header) + 96px)}.workspace-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 0}.workspace-nav>span{grid-column:1/-1;font-size:12px}.workspace-nav button{width:100%;padding:6px 4px;font-size:10px}.footer-links{margin-top:9px}}

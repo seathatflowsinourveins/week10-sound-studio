@@ -1,6 +1,6 @@
 # Sources and version decisions
 
-Checked 10 November 2026. Explanations, diagrams and practice programs are original teaching material. Class programs stay linked and credited, rather than being republished wholesale. User-provided worksheet/CSV originals and unrelated starred-repository metadata are excluded from this public repository.
+Checked 11 November 2026. Explanations, diagrams and practice programs are original teaching material. Class programs stay linked and credited, rather than being republished wholesale. User-provided worksheet/CSV originals and unrelated starred-repository metadata are excluded from this public repository.
 
 ## Class scope
 
@@ -13,7 +13,7 @@ Checked 10 November 2026. Explanations, diagrams and practice programs are origi
 
 ## Runtime pins and contrary evidence
 
-The modern class loadSound example uses **p5 2.3.4 + p5.sound 0.4.1**. This studio uses the same pair. Upstream p5 latest was still 2.3.4 at verification; p5.sound main identified 0.4.2 at revision `3071d5b3d51d76823092ff1928c1153422db037b`. **Hold 0.4.1** to preserve the verified class pair. Recheck when an observed compatibility problem or class change warrants updating, and rerun the browser/audio checks before adopting it.
+The modern class loadSound example uses **p5 2.3.4 + p5.sound 0.4.1**. This studio uses the same pair. At the 11 November checkpoint, upstream p5 latest remained 2.3.4; npm p5.sound latest was 0.4.2, and sound main was `3071d5b3d51d76823092ff1928c1153422db037b`. **Hold 0.4.1** to preserve the verified class pair. This is a compatibility hold, not a measured comparison with 0.4.2. Recheck when an observed compatibility problem or class change warrants updating, and rerun the applicable native and browser/audio checks before adopting it.
 
 The maintained sound source is [processing/p5.sound.js](https://github.com/processing/p5.sound.js). The older [processing/p5.js-sound](https://github.com/processing/p5.js-sound) README marks that implementation as sunset. These packages are not interchangeable without checking APIs.
 
@@ -30,11 +30,15 @@ Captured class sketches mix versions:
 
 Pinned implementation checks: `getAudioContext()` returns a native AudioContext; new FFT bins use 0–1 and waveform values use −1–1. AudioIn `.start()` returns undefined and handles permission asynchronously; awaiting it does not prove success. Microphone routing disconnects the default speaker route before connecting the amplitude analyzer. The UI distinguishes practice, pending/unavailable, and a live stream.
 
+Numbered request tickets prevent a completed audio wait from reviving a locally stopped or superseded action. The microphone lesson keeps one attempt pending until its outcome is observable; Stop cancels intent and closes a late stream. Because the pinned wrapper does not expose permission rejection, denied/unavailable attempts direct the learner to Run for a fresh preview. Native buttons use p5 `mouseClicked()` for semantic click, including Enter/Space, and `describe()` reports discrete canvas states.
+
 Primary references: [p5.sound](https://p5js.org/reference/p5.sound/), [Oscillator](https://p5js.org/reference/p5.sound/p5.Oscillator/), [loadSound](https://p5js.org/reference/p5/loadSound/), and the unmodified pinned package implementation. A first attempt at the old oscillator reference URL returned 404; the official sound index supplied the current path. The npm tarball has distribution code, not a `src/` directory; implementation checks used its unminified distribution instead.
 
 Refinement audit reconfirmed the same wiki/blob identities and five class sketch captures; no class-source drift was found. Hold the same runtime pins. The pinned `userStartAudio()` helper drops the native resume Promise (unminified line16843); our gesture handlers therefore await `getAudioContext().resume()` directly. This reaches the same cached signal context and accurately waits for browser processing, without starting a source or requesting microphone permission. [AudioContext.resume documentation](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/resume) confirms the native Promise behavior. Deferred and rejected readiness are checked independently.
 
-The FFT lesson uses 256 bins and shows the first32, with a sample-rate-derived frequency label; quiet values are magnified only for drawing. Its silent concept model draws32 bins and highlights a pure tone's nearest bin center, with neighboring spread explicitly described as a simplification. Ear practice now includes both fixed tonic and moving oscillator at quiet gains. The official tool remains the submission destination. One color per upward threshold crossing is labeled as an anti-flicker adaptation of the worksheet. The Freytag article and Amadeus scene remain separate class checklist entries.
+The FFT lesson uses 256 bins and shows the first 32, with a sample-rate-derived frequency label; quiet values are magnified only for drawing. Its silent model uses the pinned waveform default of 1024 samples: 21.33 ms at 48 kHz or 23.22 ms at 44.1 kHz. The real plot derives duration from the returned sample count and actual sample rate. The pitch model separately shows a fixed 9.09 ms window and the selected frequency's period. The FFT model highlights a pure tone's nearest bin center, with neighboring spread explicitly described as a simplification.
+
+Ear practice includes both fixed tonic and moving oscillator at quiet gains. The official tool remains the submission destination. One color per upward threshold crossing is labeled as an anti-flicker adaptation of the worksheet. The Freytag article and Amadeus scene remain separate class checklist entries.
 
 ## Selected starred design/workflow references
 
@@ -45,5 +49,8 @@ A bounded scan of 300 starred repositories informed this shortlist; it was not a
 | [Diagram Design](https://github.com/cathrynlavery/diagram-design) | `f2496acbde9f45ccb55c24d4f75210c8a1355df8` | Low-density semantic SVG diagrams, readable labels and explicit controls. |
 | [Hallmark](https://github.com/Nutlope/hallmark) | `7e213cb6feb4ef82733bd66a0600b2e54ca0994c` | Shared dark tokens, focus states, contrast and responsive working layouts. |
 | [Waza](https://github.com/tw93/Waza) | `6095341ad46b063619f4d0a5afc1c6fa8f1b4696` | Scoped independent review, exact evidence and source/build parity. |
+| [W3C ARIA Authoring Practices: Button](https://www.w3.org/WAI/ARIA/apg/patterns/button/) | Repository `0f765e4dc33e966026114ac12a8380db1de3b787` | Native button semantics and Enter/Space activation. |
+
+At the 11 November checkpoint, Diagram Design remained at the inspected revision. Hallmark `04977e15f3dfd6ee4b74c887dac3eb52665d6c92` changed contributor/governance files; retain the inspected `7e213cb` visual patterns. Waza `355b9dc7e16a6cec2df519d26702a9400de988da` changed version/setup metadata; retain the inspected `6095341` review patterns. Recheck these holds when the relevant design, interaction or review instructions change. The W3C APG reference was added at this checkpoint; no upstream setup scripts were run.
 
 Native HTML/CSS/SVG avoids a framework installation, extra dependencies and iframe login problems. Illustrations identify when they show a concept rather than measured sound; the p5 previews perform the actual exercises. The previous Week 9 site and saved sketch remain separate.

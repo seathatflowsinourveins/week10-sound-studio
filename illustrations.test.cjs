@@ -15,6 +15,9 @@ test('threshold distinguishes remaining above from a new upward crossing',()=>{
 test('FFT axes are derived from sample rate and no ear targets appear before practice',()=>{
  const I=illustrations();assert.equal(I.model('fft',{sampleRate:48000}).data.binHz,93.75);assert.equal(I.model('fft',{sampleRate:44100}).data.range,2756.25);const ear=I.model('ear',{phase:2});assert(!ear.formula.includes('1.34'));assert(!ear.data.targets);
 });
+test('waveform models label their duration and use cycles consistent with the actual sample window',()=>{
+ const I=illustrations(),fft=I.model('fft',{sampleRate:48000,frequency:440});assert.equal(fft.data.sampleCount,1024);assert(Math.abs(fft.data.windowMs-21.3333333333)<1e-6);assert(Math.abs(fft.data.cycles-9.3866666667)<1e-6);assert(fft.metrics.some(text=>/21\.33.*ms/.test(text)));const other=I.model('fft',{sampleRate:44100,frequency:440});assert(Math.abs(other.data.windowMs-23.2199546)<1e-6);assert.equal(I.model('pitch',{frequency:250}).data.periodMs,4);
+});
 test('FFT model draws 32 bins and a changing pure tone selects its nearest bin center',()=>{
  const I=illustrations(),host={children:[],setAttribute(){},replaceChildren(){this.children=[];},append(el){this.children.push(el);},ownerDocument:{createElementNS(_,tag){return {tag,attrs:{},setAttribute(k,v){this.attrs[k]=v;}};}}};
  I.draw(host,I.model('fft',{sampleRate:48000,frequency:440}));assert.equal(host.children.filter(e=>e.tag==='rect').length,32);assert.equal(Number(host.children.find(e=>e.tag==='rect'&&e.attrs.fill==='var(--amber)').attrs.x),237.5);
