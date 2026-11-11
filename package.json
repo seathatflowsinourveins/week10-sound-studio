@@ -1,0 +1,13 @@
+{
+  "name": "week10-sound-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An illustrated beginner's Week 10 sound guide with live p5 practice.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test *.test.cjs",
+    "build": "node scripts/build.cjs",
+    "check": "npm test && npm run build",
+    "start": "node scripts/serve.cjs"
+  }
+}

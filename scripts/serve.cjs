@@ -1,0 +1,5 @@
+'use strict';
+const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),root=path.resolve(__dirname,'../dist');
+if(!fs.existsSync(path.join(root,'release.json')))throw Error('Run npm run build first.');
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.wav':'audio/wav','.zip':'application/zip','.md':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8'};
+http.createServer((req,res)=>{try{const url=new URL(req.url,'http://localhost'),relative=decodeURIComponent(url.pathname).replace(/^\/+/,''),file=path.resolve(root,relative||'index.html');if(file!==root&&!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}if(!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404).end('Not found');return;}res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});fs.createReadStream(file).pipe(res);}catch{res.writeHead(400).end('Bad request');}}).listen(8759,'127.0.0.1',()=>console.log('Week 10 preview: http://127.0.0.1:8759/'));
