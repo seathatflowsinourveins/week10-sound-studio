@@ -103,6 +103,12 @@ test('single-file mouse press plays then pauses after the awaited file load', as
   await run.ctx.mousePressed(); await run.ctx.mousePressed();
   assert.deepEqual(run.effects.filter(x => ['play', 'pause'].includes(x[0])), [['play'], ['pause']]);
 });
+test('FFT display magnifies a quiet measured signal without increasing audio gain',async()=>{
+ const run=sketch(course().lessons.find(x=>x.id==='fft')),bars=[],points=[];
+ run.ctx.p5.FFT=class{analyze(){return [.025];}waveform(){return [-.025,.025];}};
+ run.ctx.rect=(...args)=>bars.push(args);run.ctx.vertex=(...args)=>points.push(args);
+ await run.ctx.setup();run.ctx.draw();assert.equal(bars[0][3],42.5);assert.equal(points[0][1],191.25);assert.equal(points[1][1],153.75);assert.deepEqual(run.effects.filter(x=>x[0]==='gain'),[['gain',.05]]);
+});
 
 test('bank loads five numbered files and number keys choose valid array entries only', async () => {
   const run = sketch(course().lessons.find(x => x.id === 'bank'));

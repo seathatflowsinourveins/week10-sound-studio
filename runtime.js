@@ -33,7 +33,7 @@
    if(dead)return;
    const canvas=document.querySelector('canvas');
    if(!dead&&!failed&&!ready&&canvas?.width&&window.p5&&window.frameCount>0&&typeof getAudioContext==='function'){
-    ready=true;status('Ready. Use the sketch controls. Sound requires your press.');tell('ready',{p5:p5.VERSION,width:canvas.width,height:canvas.height});
+    ready=true;status('Ready. Use the sketch controls. Sound requires your press.');tell('ready',{p5:p5.VERSION,width:window.width||canvas.width,height:window.height||canvas.height});
    }
    if(!ready&&++checks>160){clearInterval(timer);if(!failed)fail('No ready p5 canvas yet. Run again, or open the lesson files in the full p5 editor.');}
    if(ready&&!failed&&!dead){try{const current=getAudioContext()?.state;if(current&&current!==lastState){lastState=current;tell('audio',{state:current});}}catch{}}

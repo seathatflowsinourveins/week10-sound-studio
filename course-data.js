@@ -270,12 +270,13 @@
       worksheet: [3], illustration: 'spectrum', concepts: ['FFT', 'bin', 'waveform', 'sample', 'normal range'],
       steps: [
         { do: 'Press Play, then change the frequency.', notice: 'The graphs come from the oscillator’s actual analyzer data, not an animated placeholder.' },
-        { do: 'Compare the bars with the lower trace.', notice: 'Bars are frequency bins. The trace is a short window of positive and negative waveform samples.' },
+        { do: 'Compare the bars with the lower trace.', notice: 'Bars are frequency bins. The trace shows waveform samples. Both drawings are enlarged ×20 so the quiet signal is visible; values beyond the plot are clipped.' },
         { do: 'Try a triangle oscillator or a different way to draw the returned arrays.', notice: 'This supports the worksheet’s FFT extension. It is not required to replace the basic microphone task.' }
       ],
       lines: lines([
         ['let osc, fft, frequency;', 'Name the sound, analyzer, and frequency control.'],
         ['let playing = false;', 'Begin silently.'],
+        ['const displayGain = 20;', 'Enlarge only the graphs ×20. This does not change the oscillator or its sound level.'],
         ['function setup() {', 'Create one signal and its analysis route.'],
         ['  createCanvas(480, 220);', 'Reserve space for spectrum bars above a waveform.'],
         ["  osc = new p5.Oscillator(440, 'sine');", 'Create a sine signal at 440 Hz.'],
@@ -301,7 +302,7 @@
         ['  noStroke();', 'Draw bars without outlines.'],
         ['  fill(124, 219, 195);', 'Choose the spectrum color.'],
         ['  for (let i = 0; i < bins.length; i++) {', 'Visit each measured bin.'],
-        ['    const bar = constrain(bins[i], 0, 1) * 85;', 'Map normalized magnitude to a maximum bar height of 85 pixels.'],
+        ['    const bar = constrain(bins[i] * displayGain, 0, 1) * 85;', 'Magnify a quiet measured bin for drawing, then limit the bar to 85 pixels. The source array stays unchanged.'],
         ['    rect(i * width / bins.length, 110 - bar, width / bins.length - 2, bar);', 'Give each bin an equal horizontal slot, growing upward from the baseline.'],
         ['  }', 'Finish the spectrum.'],
         ['  const wave = fft.waveform();', 'Read waveform samples, normally between -1 and 1.'],
@@ -309,12 +310,12 @@
         ['  stroke(243, 188, 116);', 'Give the time-domain trace a different color.'],
         ['  beginShape();', 'Start connecting sample positions.'],
         ['  for (let i = 0; i < wave.length; i++) {', 'Visit each sample in the current waveform window.'],
-        ['    vertex(map(i, 0, wave.length - 1, 0, width), map(wave[i], -1, 1, 210, 135));', 'Map sample order across the canvas and signed amplitude vertically.'],
+        ['    vertex(map(i, 0, wave.length - 1, 0, width), map(constrain(wave[i] * displayGain, -1, 1), -1, 1, 210, 135));', 'Enlarge the signed sample for drawing and clip it to the plot. The original waveform values and audio stay unchanged.'],
         ['  }', 'Finish adding waveform points.'],
         ['  endShape();', 'Draw the connected trace.'],
         ['  noStroke();', 'Return text to a clean outline-free style.'],
         ['  fill(235);', 'Choose a readable text color.'],
-        ["  text('Spectrum 0–1 / waveform -1–1 | ' + (playing ? 'Playing' : 'Silent'), 12, 18);", 'Label the two different numerical ranges and playback state.'],
+        ["  text('Graph ×20 · audio gain 0.05 | ' + (playing ? 'Playing' : 'Silent'), 12, 18);", 'Label the visual magnification separately from the quiet audio gain and playback state.'],
         ['}', 'Finish the frame.']
       ])
     },

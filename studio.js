@@ -14,7 +14,7 @@
  function stopSound(){try{frame.contentWindow?.soundPreview?.stop();}catch{}$('audio-status').textContent='Audio stopped';if(token)$('preview-status').textContent='Stopped · press Run my code to prepare again';}
  function releasePreview(){stopSound();token='';frame.srcdoc='';}
  function run(){
-  if(!lesson)return;releasePreview();runCode=editor.value;token='sound-'+Date.now()+'-'+(++sequence);$('preview-status').textContent='Loading drawing and sound libraries…';$('preview-status').classList.remove('error');$('audio-status').textContent='Audio off · click Play';frame.srcdoc=R.frameHTML({code:runCode,token});
+  if(!lesson)return;releasePreview();runCode=editor.value;token='sound-'+Date.now()+'-'+(++sequence);$('preview-status').textContent='Loading drawing and sound libraries…';$('preview-status').classList.remove('error');$('audio-status').textContent='Audio off · use sketch controls';frame.srcdoc=R.frameHTML({code:runCode,token});
  }
  function drawRow(reveal=false){
   const clean=!!lesson&&editor.value===sourceOf(lesson),row=$('current-row');row.hidden=!clean;
@@ -111,7 +111,7 @@
   const data=event.data;if(!token||event.source!==frame.contentWindow||event.origin!==location.origin||data?.token!==token)return;
   if(data.kind==='ready')$('preview-status').textContent='p5 '+data.p5+' ready · '+data.width+' × '+data.height;
   if(data.kind==='error'){$('preview-status').textContent=String(data.message);$('preview-status').classList.add('error');}
-  if(data.kind==='audio')$('audio-status').textContent=data.state==='running'?'Audio on':data.state==='suspended'?'Audio off · click Play':'Audio stopped · Run to prepare';
+  if(data.kind==='audio')$('audio-status').textContent=data.state==='running'?'Audio enabled':data.state==='suspended'?'Audio off · use sketch controls':'Audio stopped · Run to prepare';
   if(data.kind==='control'){
    if(data.name==='Frequency')diagram.frequency=C.clamp(data.value,20,2000,220);if(data.name==='Volume')diagram.volume=C.clamp(data.value,0,.1,.05);if(data.name==='Waveform'&&['sine','triangle','square','sawtooth'].includes(data.value))diagram.wave=data.value;
    if(data.name==='Threshold')diagram.threshold=C.clamp(data.value,0,1,.1);if(data.name==='Practice level')diagram.level=C.clamp(data.value,0,1,0);if(data.name==='Ear pitch')diagram.ear=C.clamp(data.value,0,1,0);illustrate();

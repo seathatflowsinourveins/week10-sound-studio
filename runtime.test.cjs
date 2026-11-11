@@ -21,6 +21,9 @@ test('readiness waits for the first draw after asynchronous setup',()=>{
  const h=observerHarness();h.win.frameCount=0;h.tick();assert(!h.messages.some(m=>m.data.kind==='ready'));
  h.win.frameCount=1;h.tick();assert(h.messages.some(m=>m.data.kind==='ready'));
 });
+test('readiness reports logical sketch dimensions rather than high-density backing pixels',()=>{
+ const h=observerHarness();h.win.width=240;h.win.height=110;h.tick();const ready=h.messages.find(m=>m.data.kind==='ready').data;assert.equal(ready.width,240);assert.equal(ready.height,110);
+});
 test('a stopped frame blocks canvas/key handlers and new microphone requests',async()=>{
  const h=observerHarness();h.win.soundPreview.stop();
  for(const kind of ['mousedown','touchstart','click','keydown','keyup']){let blocked=0,prevented=0;h.events[kind]?.({stopImmediatePropagation(){blocked++;},preventDefault(){prevented++;}});assert.equal(blocked,1,kind);assert.equal(prevented,1,kind);}
