@@ -1,5 +1,9 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const C=require('./core.js');
+test('lesson understanding and two reading checks remain independent across old progress imports',()=>{
+ const old=C.normalize({version:1,checks:{article:true},notes:{unlock:'my note'}});assert.equal(old.checks.article,true);assert.notEqual(old.checks.freytag,true);assert.notEqual(old.checks.amadeus,true);assert.deepEqual(old.learned,{});
+ const next=C.merge(old,{version:1,checks:{freytag:true,amadeus:false},learned:{unlock:true,bank:false,unknown:true}});assert.equal(next.checks.freytag,true);assert.equal(next.checks.amadeus,false);assert.deepEqual(next.learned,{unlock:true,bank:false});assert.equal(next.notes.unlock,'my note');
+});
 test('progress preserves bounded per-lesson line and practice positions',()=>{
  const result=C.normalize({version:1,positions:{pitch:{line:11,step:2},unknown:{line:1},mic:{line:-2,step:1e5}}});
  assert.deepEqual(result.positions,{pitch:{line:11,step:2},mic:{line:0,step:99}});

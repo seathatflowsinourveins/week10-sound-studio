@@ -51,10 +51,10 @@ function sketch(lesson) {
     createButton: label => element(label), createSlider: (min, max, value) => element('slider', value),
     createSelect: () => element('select'), createP: label => element(label),
     loadSound: async name => { files.push(name); return new Source(); },
-    userStartAudio: async () => { effects.push(['unlock']); },
+    userStartAudio: () => { effects.push(['unlock']); },
     background() {}, fill() {}, noFill() {}, noStroke() {}, stroke() {}, strokeWeight() {},
     text() {}, textSize() {}, textAlign() {}, line() {}, circle() {}, ellipse() {}, rect() {},
-    beginShape() {}, endShape() {}, vertex() {}, describe() {},
+    beginShape() {}, endShape() {}, vertex() {}, describe() {}, getAudioContext:()=>({sampleRate:48000,resume:async()=>{effects.push(['unlock']);}}),
     saveCanvas: (...args) => effects.push(['save', ...args]),
     map: (n, a, b, c, d) => c + (n - a) / (b - a) * (d - c),
     constrain: (n, min, max) => Math.max(min, Math.min(max, n)),
@@ -103,11 +103,23 @@ test('single-file mouse press plays then pauses after the awaited file load', as
   await run.ctx.mousePressed(); await run.ctx.mousePressed();
   assert.deepEqual(run.effects.filter(x => ['play', 'pause'].includes(x[0])), [['play'], ['pause']]);
 });
+test('the gesture handler waits for actual AudioContext readiness before starting a source',async()=>{
+ const run=sketch(course().lessons.find(x=>x.id==='unlock'));let ready;run.ctx.getAudioContext=()=>({resume:()=>new Promise(resolve=>ready=resolve)});await run.ctx.setup();const playing=run.controls.find(x=>x.label==='Play').callbacks.press();await Promise.resolve();assert.equal(run.effects.filter(x=>x[0]==='start').length,0);assert.equal(typeof ready,'function');ready();await playing;assert.equal(run.effects.filter(x=>x[0]==='start').length,1);
+});
+test('a rejected audio activation never starts the oscillator',async()=>{
+ const run=sketch(course().lessons.find(x=>x.id==='unlock'));run.ctx.getAudioContext=()=>({resume:()=>Promise.reject(Error('activation denied'))});await run.ctx.setup();await assert.rejects(run.controls.find(x=>x.label==='Play').callbacks.press(),/activation denied/);assert.equal(run.effects.filter(x=>x[0]==='start').length,0);
+});
 test('FFT display magnifies a quiet measured signal without increasing audio gain',async()=>{
  const run=sketch(course().lessons.find(x=>x.id==='fft')),bars=[],points=[];
  run.ctx.p5.FFT=class{analyze(){return [.025];}waveform(){return [-.025,.025];}};
  run.ctx.rect=(...args)=>bars.push(args);run.ctx.vertex=(...args)=>points.push(args);
  await run.ctx.setup();run.ctx.draw();assert.equal(bars[0][3],42.5);assert.equal(points[0][1],191.25);assert.equal(points[1][1],153.75);assert.deepEqual(run.effects.filter(x=>x[0]==='gain'),[['gain',.05]]);
+});
+test('FFT resolves the low-frequency range using 256 bins and draws only the first 32',async()=>{
+ const run=sketch(course().lessons.find(x=>x.id==='fft')),sizes=[],bars=[],labels=[];run.ctx.p5.FFT=class{constructor(size){sizes.push(size);}analyze(){return Array.from({length:256},(_,i)=>i===10?.025:0);}waveform(){return [0,0];}};run.ctx.rect=(...a)=>bars.push(a);run.ctx.text=(...a)=>labels.push(a[0]);await run.ctx.setup();run.ctx.draw();assert.deepEqual(sizes,[256]);assert.equal(bars.length,32);assert(bars.every(a=>a[2]>0));assert(labels.some(x=>x.includes('3000 Hz')));
+});
+test('ear practice starts and stops both a quiet tonic reference and a moving oscillator',async()=>{
+ const run=sketch(course().lessons.find(x=>x.id==='ear'));await run.ctx.setup();assert.equal(run.effects.filter(x=>x[0]==='start').length,0);await run.controls.find(x=>x.label==='Start').callbacks.press();assert.equal(run.effects.filter(x=>x[0]==='start').length,2);run.controls.find(x=>x.label==='Stop').callbacks.press();assert.equal(run.effects.filter(x=>x[0]==='stop').length,2);assert.deepEqual(run.effects.filter(x=>x[0]==='gain'),[['gain',.025],['gain',.025]]);
 });
 
 test('bank loads five numbered files and number keys choose valid array entries only', async () => {

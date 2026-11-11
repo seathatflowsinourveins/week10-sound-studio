@@ -32,6 +32,10 @@ Pinned implementation checks: `getAudioContext()` returns a native AudioContext;
 
 Primary references: [p5.sound](https://p5js.org/reference/p5.sound/), [Oscillator](https://p5js.org/reference/p5.sound/p5.Oscillator/), [loadSound](https://p5js.org/reference/p5/loadSound/), and the unmodified pinned package implementation. A first attempt at the old oscillator reference URL returned 404; the official sound index supplied the current path. The npm tarball has distribution code, not a `src/` directory; implementation checks used its unminified distribution instead.
 
+Refinement audit reconfirmed the same wiki/blob identities and five class sketch captures; no class-source drift was found. Hold the same runtime pins. The pinned `userStartAudio()` helper drops the native resume Promise (unminified line16843); our gesture handlers therefore await `getAudioContext().resume()` directly. This reaches the same cached signal context and accurately waits for browser processing, without starting a source or requesting microphone permission. [AudioContext.resume documentation](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/resume) confirms the native Promise behavior. Deferred and rejected readiness are checked independently.
+
+The FFT lesson uses 256 bins and shows the first32, with a sample-rate-derived frequency label; quiet values are magnified only for drawing. Its silent concept model draws32 bins and highlights a pure tone's nearest bin center, with neighboring spread explicitly described as a simplification. Ear practice now includes both fixed tonic and moving oscillator at quiet gains. The official tool remains the submission destination. One color per upward threshold crossing is labeled as an anti-flicker adaptation of the worksheet. The Freytag article and Amadeus scene remain separate class checklist entries.
+
 ## Selected starred design/workflow references
 
 A bounded scan of 300 starred repositories informed this shortlist; it was not an exhaustive survey or an objective “state of the art” ranking. No external skill scripts were executed and no model, provider, authentication or global configuration was changed.

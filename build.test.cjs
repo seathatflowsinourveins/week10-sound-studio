@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const D=require('./course-data.js'),root=__dirname,sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 test('build is deterministic, complete and excludes private inputs',()=>{
  const build=()=>execFileSync(process.execPath,['scripts/build.cjs'],{cwd:root,encoding:'utf8'}),first=JSON.parse(build()),release=fs.readFileSync(path.join(root,'dist/release.json'));assert.equal(build().trim(),JSON.stringify(first));assert.deepEqual(fs.readFileSync(path.join(root,'dist/release.json')),release);
- const manifest=JSON.parse(release);assert.equal(manifest.lessons,9);assert.equal(manifest.lines,304);assert.equal(manifest.resources,42);
+ const manifest=JSON.parse(release);assert.equal(manifest.lessons,9);assert.equal(manifest.lines,D.lessons.reduce((n,l)=>n+l.lines.length,0));assert.equal(manifest.resources,43);
  for(const file of manifest.files){const b=fs.readFileSync(path.join(root,'dist',file.path));assert.equal(b.length,file.bytes);assert.equal(sha(b),file.sha256,file.path);assert(!file.path.split('/').some(part=>part.startsWith('.')),'Pages upload excludes hidden paths: '+file.path);assert(!/Worksheet 10|Diatonic Scale|progress\.json|evidence\/|docs\//.test(file.path));}
  const html=fs.readFileSync(path.join(root,'dist/index.html'),'utf8');assert(html.includes('build '+first.release));
  for(const match of html.matchAll(/(?:src|href)="(\.\/[^"?#]+)(?:\?[^"#]*)?(?:#[^"]*)?"/g))assert(fs.existsSync(path.join(root,'dist',match[1])),match[1]);
