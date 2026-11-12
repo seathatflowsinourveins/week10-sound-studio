@@ -8,7 +8,7 @@ A dark, beginner-friendly study desk. The selected code line aligns with its exp
 
 1. Open **Lesson 1: Make one sound**. The drawing loads silently.
 2. Click **Try in p5 ↓**, then press **Play** and **Stop** inside the sketch.
-3. Use **Next line** to match an explanation to the highlighted code row. **Try in p5** jumps directly to the sound controls.
+3. Use **Next line** to match an explanation to the highlighted code row. Lesson 1 includes short word-and-symbol notes for all 29 lines, from `let osc;` to Play/Stop cancellation and accessible descriptions. **Try in p5** jumps directly to the sound controls.
 4. Follow the three small practices. Each has a button that focuses its exact guide line. Edited code is kept, and any mismatch is labeled.
 5. Try the concept check, write your own observation and continue. The course map shows all nine goals; every lesson links its class sources. **Worksheet** connects practice to all five deliverables; **Materials** holds the complete source map, 17 syntax entries and the full glossary.
 
